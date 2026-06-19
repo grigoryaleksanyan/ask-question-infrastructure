@@ -2,7 +2,7 @@
 
 ## Назначение
 
-Docker Compose-окружение для локальной разработки: PostgreSQL 16.1 и MailHog.
+Docker Compose-окружение для локальной разработки: PostgreSQL 16.1, MailHog и MinIO.
 
 ## Команды
 
@@ -20,7 +20,7 @@ Docker Compose-окружение для локальной разработки
 ## Примечания
 
 - Docker Compose не задаёт `POSTGRES_DB`, поэтому в PostgreSQL изначально создаётся база по умолчанию (`postgres`). БД `AskQuestionDb` указывается в строке подключения backend и создаётся при первом старте приложения.
-- Сервисы используют стандартную сеть Compose по умолчанию; данные PostgreSQL хранятся в bind-mount `./postgres/postgre_database` (добавлен в `.gitignore`).
+- Сервисы используют стандартную сеть Compose по умолчанию; данные PostgreSQL хранятся в bind-mount `./postgres/postgre_database` (в `.gitignore`), данные MinIO — в bind-mount `./minio/data` (в `.gitignore`).
 
 ## Конфигурация
 
