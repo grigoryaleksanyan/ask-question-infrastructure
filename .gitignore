@@ -1,2 +1,5 @@
 #Хранилище БД.
 postgres/postgre_database
+
+# MinIO data
+minio/data
