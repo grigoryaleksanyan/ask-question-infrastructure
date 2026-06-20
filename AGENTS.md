@@ -13,14 +13,16 @@ Docker Compose-окружение для локальной разработки
 
 | Сервис | Образ | Порт | Назначение |
 |--------|-------|------|-----------|
-| `postgre` | `postgres:16.1-bullseye` | `5432` | PostgreSQL. Контейнер `postgre_sql`, restart `unless-stopped`. БД `AskQuestionDb` создаётся приложением (backend), инфраструктура поднимает сервер с user `postgres` / password `12345` |
-| `mailhog` | `mailhog/mailhog` | `1025` (SMTP), `8025` (веб-UI) | Перехват исходящих писем. Контейнер `mailhog`, restart `unless-stopped`, fallback-порты `1025`/`8025` |
-| `minio` | `minio/minio` | `9000` (S3 API), `9001` (веб-консоль) | S3-совместимое хранилище для вложений. Контейнер `minio`, restart `unless-stopped`. Bucket `ask-question-attachments` создаётся backend при старте. Credentials: `minioadmin`/`minioadmin` (из `.env`) |
+| `postgre` | `postgres:16.1-bullseye` | `5432` | PostgreSQL. Контейнер `postgre_sql`, restart `unless-stopped`. БД `AskQuestionDb` создаётся приложением (backend), инфраструктура поднимает сервер с user `postgres` / password `12345`. Порт **не имеет** default-значения в docker-compose (в отличие от MailHog и MinIO) |
+| `mailhog` | `mailhog/mailhog` | `1025` (SMTP), `8025` (веб-UI) | Перехват исходящих писем. Контейнер `mailhog`, restart `unless-stopped`. Порты со значениями по умолчанию (`${MAILHOG_SMTP_PORT:-1025}`, `${MAILHOG_WEB_PORT:-8025}`) |
+| `minio` | `minio/minio` | `9000` (S3 API), `9001` (веб-консоль) | S3-совместимое хранилище для вложений. Контейнер `minio`, restart `unless-stopped`. Команда: `server /data --console-address ":9001"`. Порты со значениями по умолчанию (`${MINIO_API_PORT:-9000}`, `${MINIO_CONSOLE_PORT:-9001}`). Bucket `ask-question-attachments` создаётся backend при старте. Credentials: `minioadmin`/`minioadmin` (из `.env`) |
 
 ## Примечания
 
 - Docker Compose не задаёт `POSTGRES_DB`, поэтому в PostgreSQL изначально создаётся база по умолчанию (`postgres`). БД `AskQuestionDb` указывается в строке подключения backend и создаётся при первом старте приложения.
 - Сервисы используют стандартную сеть Compose по умолчанию; данные PostgreSQL хранятся в bind-mount `./postgres/postgre_database` (в `.gitignore`), данные MinIO — в bind-mount `./minio/data` (в `.gitignore`).
+- Файл `.env` с credentials (`POSTGRES_PASSWORD`, `MINIO_ROOT_PASSWORD`) отслеживается в git — осознанное решение для локальной dev-инфраструктуры с тестовыми credentialами. `.env` не добавлен в `.gitignore`.
+- Ни один сервис не имеет `healthcheck` или `depends_on` — backend самостоятельно обрабатывает недоступность сервисов при старте (миграции EF, создание S3-bucket).
 
 ## Конфигурация
 
